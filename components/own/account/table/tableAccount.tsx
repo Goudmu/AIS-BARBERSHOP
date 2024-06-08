@@ -69,21 +69,22 @@ export default function TableAccountComponent() {
   };
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    try {
-      const res = await fetch("/api/account", {
-        method: "POST",
-        body: JSON.stringify(newAccount),
-      });
-      if (res.ok) {
-        getData();
-        toast({
-          title: "Akun Berhasil Ditambahkan",
-        });
-      }
-    } catch (error: any) {
-      console.log(error);
-      throw new Error(error);
-    }
+    console.log(newAccount);
+    // try {
+    //   const res = await fetch("/api/account", {
+    //     method: "POST",
+    //     body: JSON.stringify(newAccount),
+    //   });
+    //   if (res.ok) {
+    //     getData();
+    //     toast({
+    //       title: "Akun Berhasil Ditambahkan",
+    //     });
+    //   }
+    // } catch (error: any) {
+    //   console.log(error);
+    //   throw new Error(error);
+    // }
     setNewAccount({
       accountID: "",
       name: "",
@@ -136,8 +137,6 @@ export default function TableAccountComponent() {
                     <div className="space-y-2">
                       <Label htmlFor="balance">Debit/Credit</Label>
                       <Select
-                        id="balance"
-                        name="balance"
                         value={newAccount.balance}
                         onValueChange={(e: any) =>
                           setNewAccount({
@@ -146,16 +145,12 @@ export default function TableAccountComponent() {
                           })
                         }
                       >
-                        <SelectTrigger id="balance">
+                        <SelectTrigger>
                           <SelectValue placeholder="Select" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="debit" id="debit">
-                            Debit
-                          </SelectItem>
-                          <SelectItem value="credit" id="credit">
-                            Credit
-                          </SelectItem>
+                          <SelectItem value="debit">Debit</SelectItem>
+                          <SelectItem value="credit">Credit</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
