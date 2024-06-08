@@ -16,6 +16,7 @@ import { capitalizeFirstLetter } from "@/lib/utils";
 
 export default function Component() {
   const [ledgerEntries, setledgerEntries] = useState<IGeneralLedger[]>([]);
+  const [trigger, setTrigger] = useState(false);
 
   const getData = async () => {
     const res = await fetch("/api/generalledger", { cache: "no-store" });
@@ -38,16 +39,20 @@ export default function Component() {
         });
       });
     });
+    newgeneralLedger.sort(
+      (a: any, b: any) =>
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
     setledgerEntries(newgeneralLedger);
   };
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [trigger]);
 
   return (
     <div className="grid gap-8">
-      <FormJurnalumum />
+      <FormJurnalumum setTrigger={setTrigger} trigger={trigger} />
       <div className="border rounded-lg overflow-auto">
         <Card>
           <CardHeader>
@@ -87,7 +92,11 @@ export default function Component() {
                               {capitalizeFirstLetter(data.accountName)}
                             </TableCell>
                             <TableCell className="py-1 text-center">
-                              {data.amount}
+                              {new Intl.NumberFormat("id", {
+                                style: "currency",
+                                currency: "IDR",
+                                maximumFractionDigits: 0,
+                              }).format(data.amount)}
                             </TableCell>
                             <TableCell className="py-1"></TableCell>
                           </TableRow>
@@ -103,7 +112,11 @@ export default function Component() {
                             </TableCell>
                             <TableCell className="py-1"></TableCell>
                             <TableCell className="py-1 text-center">
-                              {data.amount}
+                              {new Intl.NumberFormat("id", {
+                                style: "currency",
+                                currency: "IDR",
+                                maximumFractionDigits: 0,
+                              }).format(data.amount)}
                             </TableCell>
                           </TableRow>
                         );

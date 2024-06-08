@@ -49,7 +49,7 @@ export default function TableAccountComponent() {
   });
 
   const getData = async () => {
-    const res = await fetch("/api/account", { cache: "no-store" });
+    const res = await fetch("/api/account?id=", { cache: "no-store" });
     const { account } = await res.json();
     setAccounts(sortAccountsByID(account));
   };

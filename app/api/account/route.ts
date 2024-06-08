@@ -7,7 +7,7 @@ export const GET = async (req: NextRequest) => {
   const idAccount = new URLSearchParams(url.searchParams).get("id")?.valueOf();
   try {
     await connectToDB();
-    if (idAccount == "asd") {
+    if (idAccount == "") {
       const account = await Account.find();
       return NextResponse.json({ account });
     } else {
