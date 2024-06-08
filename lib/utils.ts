@@ -13,3 +13,8 @@ export function capitalizeFirstLetter(string: string) {
 export function sortAccountsByID(accounts: IAccount[]): IAccount[] {
   return accounts.sort((a, b) => a.accountID.localeCompare(b.accountID));
 }
+
+export const uuidToId = (uuid: any) => {
+  const hash = uuid.split("-").join("");
+  return parseInt(hash.substr(0, 8), 16);
+};

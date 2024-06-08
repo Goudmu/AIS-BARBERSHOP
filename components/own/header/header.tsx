@@ -32,7 +32,7 @@ const HeaderOwnComponent = () => {
           Services
         </Link>
         <Link
-          href="/transactions"
+          href="/jurnalumum"
           className={` dark:text-gray-400 dark:hover:text-gray-50 ${
             pathname === "/transaction"
               ? "font-bold text-gray-900"
@@ -40,7 +40,18 @@ const HeaderOwnComponent = () => {
           }`}
           prefetch={false}
         >
-          Transactions
+          Jurnal Umum
+        </Link>
+        <Link
+          href="/accounts"
+          className={` dark:text-gray-400 dark:hover:text-gray-50 ${
+            pathname === "/accounts"
+              ? "font-bold text-gray-900"
+              : "text-gray-500 hover:text-gray-900"
+          }`}
+          prefetch={false}
+        >
+          Akun Akuntansi
         </Link>
       </nav>
       <div className="flex items-center gap-4">
