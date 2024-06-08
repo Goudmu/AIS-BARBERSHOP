@@ -18,12 +18,16 @@ const newGeneralEntrySchema: Schema = new Schema({
   amount: { type: Number, required: true },
 });
 
-const newGLSchema: Schema = new Schema({
-  date: { type: Date, required: true },
-  description: { type: String, required: true },
-  debits: { type: [newGeneralEntrySchema], required: true },
-  credits: { type: [newGeneralEntrySchema], required: true },
-});
+const newGLSchema: Schema = new Schema(
+  {
+    date: { type: Date, required: true },
+    description: { type: String, required: true },
+    debits: { type: [newGeneralEntrySchema], required: true },
+    credits: { type: [newGeneralEntrySchema], required: true },
+    type: { type: String, required: true },
+  },
+  { strict: false }
+);
 
 export default mongoose.models.newGLSchema ||
   mongoose.model<IGeneralLedger>("newGLSchema", newGLSchema);

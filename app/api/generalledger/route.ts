@@ -20,9 +20,9 @@ export const GET = async () => {
 export const POST = async (req: NextRequest) => {
   try {
     await connectToDB();
-    const { date, description, debits, credits } = await req.json();
+    const { date, description, debits, credits, type } = await req.json();
     // VALIDATE INPUT
-    if (!date || !description || !debits || !credits) {
+    if (!date || !description || !debits || !credits || !type) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
@@ -89,6 +89,7 @@ export const POST = async (req: NextRequest) => {
         accountID: credit.accountId,
         amount: credit.amount,
       })),
+      type,
     });
 
     return NextResponse.json({ message: "General Ledger Has Created" });

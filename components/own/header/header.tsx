@@ -53,6 +53,28 @@ const HeaderOwnComponent = () => {
         >
           Akun Akuntansi
         </Link>
+        <Link
+          href="/worksheet"
+          className={` dark:text-gray-400 dark:hover:text-gray-50 ${
+            pathname === "/worksheet"
+              ? "font-bold text-gray-900"
+              : "text-gray-500 hover:text-gray-900"
+          }`}
+          prefetch={false}
+        >
+          Worksheet
+        </Link>
+        {/* <Link
+          href="/reports"
+          className={` dark:text-gray-400 dark:hover:text-gray-50 ${
+            pathname === "/reports"
+              ? "font-bold text-gray-900"
+              : "text-gray-500 hover:text-gray-900"
+          }`}
+          prefetch={false}
+        >
+          Reports
+        </Link> */}
       </nav>
       <div className="flex items-center gap-4">
         <Button variant="outline" size="icon" className="rounded-full">

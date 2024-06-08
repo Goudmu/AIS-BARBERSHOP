@@ -102,6 +102,7 @@ const FormJurnalumum = ({ trigger, setTrigger }: any) => {
         description: entries[0].description,
         debits,
         credits,
+        type: "jurnalumum",
       }),
     });
     if (res.ok) {
