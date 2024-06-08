@@ -1,8 +1,3 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/LEdiOdVE5kv
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -39,8 +34,10 @@ import {
 } from "@/components/ui/accordion";
 
 import { IAccount } from "@/mongodb/models/Account";
-import { capitalizeFirstLetter } from "@/lib/utils";
+import { capitalizeFirstLetter, sortAccountsByID } from "@/lib/utils";
 import { toast } from "@/components/ui/use-toast";
+import { TrashIcon } from "@/lib/icon/icon";
+import AlertDelete from "../../other/alertDelete";
 
 export default function TableAccountComponent() {
   const [accounts, setAccounts] = useState<IAccount[]>([]);
@@ -54,7 +51,7 @@ export default function TableAccountComponent() {
   const getData = async () => {
     const res = await fetch("/api/account", { cache: "no-store" });
     const { account } = await res.json();
-    setAccounts(account);
+    setAccounts(sortAccountsByID(account));
   };
 
   useEffect(() => {
@@ -67,30 +64,48 @@ export default function TableAccountComponent() {
       [e.target.name]: e.target.value,
     });
   };
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    console.log(newAccount);
-    // try {
-    //   const res = await fetch("/api/account", {
-    //     method: "POST",
-    //     body: JSON.stringify(newAccount),
-    //   });
-    //   if (res.ok) {
-    //     getData();
-    //     toast({
-    //       title: "Akun Berhasil Ditambahkan",
-    //     });
-    //   }
-    // } catch (error: any) {
-    //   console.log(error);
-    //   throw new Error(error);
-    // }
+    try {
+      const res = await fetch("/api/account", {
+        method: "POST",
+        body: JSON.stringify(newAccount),
+      });
+      if (res.ok) {
+        getData();
+        toast({
+          title: "Akun Berhasil Ditambahkan",
+        });
+      }
+    } catch (error: any) {
+      console.log(error);
+      throw new Error(error);
+    }
     setNewAccount({
       accountID: "",
       name: "",
       balance: "debit",
       amount: 0,
     });
+  };
+
+  const deleteHandler = async (e: React.MouseEvent<HTMLDivElement>) => {
+    try {
+      const res = await fetch("/api/account", {
+        method: "DELETE",
+        body: JSON.stringify({ _id: e.currentTarget.id }),
+      });
+      if (res.ok) {
+        getData();
+        toast({
+          title: "Akun Berhasil Dihapus",
+        });
+      }
+    } catch (error: any) {
+      console.log(error);
+      throw new Error(error);
+    }
   };
 
   return (
@@ -191,7 +206,12 @@ export default function TableAccountComponent() {
                   <TableCell className=" py-1">
                     ${account.amount.toFixed(2)}
                   </TableCell>
-                  <TableCell className=" py-1"></TableCell>
+                  <TableCell className=" py-1">
+                    <AlertDelete
+                      deleteFuntion={deleteHandler}
+                      id={account._id}
+                    />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

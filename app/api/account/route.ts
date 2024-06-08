@@ -24,3 +24,15 @@ export const POST = async (req: NextRequest) => {
     throw new Error(error);
   }
 };
+
+export const DELETE = async (req: NextRequest) => {
+  try {
+    await connectToDB();
+    const { _id } = await req.json();
+    const account = await Account.findOneAndDelete({ _id });
+    return NextResponse.json({ account });
+  } catch (error: any) {
+    console.log(error);
+    throw new Error(error);
+  }
+};
