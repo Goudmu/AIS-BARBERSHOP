@@ -204,7 +204,11 @@ export default function TableAccountComponent() {
                     {capitalizeFirstLetter(account.balance)}
                   </TableCell>
                   <TableCell className=" py-1">
-                    ${account.amount.toFixed(2)}
+                    {new Intl.NumberFormat("id", {
+                      style: "currency",
+                      currency: "IDR",
+                      maximumFractionDigits: 0,
+                    }).format(account.amount)}
                   </TableCell>
                   <TableCell className=" py-1">
                     <AlertDelete

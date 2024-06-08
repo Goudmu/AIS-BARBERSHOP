@@ -10,9 +10,11 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import FormJurnalumum from "../form/formJurnalumum";
-import React, { useEffect, useState } from "react";
+import React, { MouseEventHandler, useEffect, useState } from "react";
 import { IGeneralLedger } from "@/mongodb/models/GL";
 import { capitalizeFirstLetter } from "@/lib/utils";
+import AlertDelete from "../../other/alertDelete";
+import { toast } from "@/components/ui/use-toast";
 
 export default function Component() {
   const [ledgerEntries, setledgerEntries] = useState<IGeneralLedger[]>([]);
@@ -50,6 +52,24 @@ export default function Component() {
     getData();
   }, [trigger]);
 
+  const deleteHandler = async (e: React.MouseEvent<HTMLDivElement>) => {
+    try {
+      const res = await fetch("/api/generalledger", {
+        method: "DELETE",
+        body: JSON.stringify({
+          _id: e.currentTarget.id,
+        }),
+      });
+      if (res.ok) {
+        setTrigger(!trigger);
+        toast({ title: "The Ledger Has Deleted" });
+      }
+    } catch (error: any) {
+      console.log(error);
+      throw new Error(error);
+    }
+  };
+
   return (
     <div className="grid gap-8">
       <FormJurnalumum setTrigger={setTrigger} trigger={trigger} />
@@ -66,6 +86,9 @@ export default function Component() {
                   <TableHead>Description</TableHead>
                   <TableHead className="w-[15%] text-center">Debit</TableHead>
                   <TableHead className="w-[15%] text-center">Credit</TableHead>
+                  <TableHead className="w-[15%] text-center">
+                    Edit / Delete
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -83,6 +106,12 @@ export default function Component() {
                         </TableCell>
                         <TableCell className="py-1"></TableCell>
                         <TableCell className="py-1"></TableCell>
+                        <TableCell className="py-1">
+                          <AlertDelete
+                            id={entry._id}
+                            deleteFuntion={deleteHandler}
+                          />
+                        </TableCell>
                       </TableRow>
                       {entry.debits.map((data, index) => {
                         return (
