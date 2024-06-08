@@ -1,16 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { useRouter } from "next/navigation";
 import { IService } from "@/mongodb/models/Service";
 import FormServices from "../form/formServices";
-import { toast } from "@/components/ui/use-toast";
+import AlertConfirm from "../../other/alertConfirm";
 
 const CardServices = () => {
   const [services, setServices] = useState<IService[]>([]);
   const [isLoading, setisLoading] = useState(true);
-  const router = useRouter();
 
   const getData = async () => {
     const res = await fetch("/api/service", { cache: "no-store" });
@@ -22,22 +19,6 @@ const CardServices = () => {
   useEffect(() => {
     getData();
   }, [isLoading]);
-
-  const bookHandler = async (data: any) => {
-    try {
-      const res = await fetch("/api/service/book", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-      if (res.ok) {
-        toast({ title: "Pendapatan Berhasil Ditambahkan" });
-        router.push("/jurnalumum");
-      }
-    } catch (error: any) {
-      console.log(error);
-      throw new Error(error);
-    }
-  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -70,9 +51,7 @@ const CardServices = () => {
                         {data.description}
                       </p>
                     </div>
-                    <Button variant="outline" onClick={() => bookHandler(data)}>
-                      Book Now
-                    </Button>
+                    <AlertConfirm data={data} />
                   </div>
                 </CardContent>
               </Card>
