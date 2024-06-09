@@ -43,6 +43,17 @@ const HeaderOwnComponent = () => {
           Jurnal Umum
         </Link>
         <Link
+          href="/jurnalpenyesuaian"
+          className={` dark:text-gray-400 dark:hover:text-gray-50 ${
+            pathname === "/jurnalpenyesuaian"
+              ? "font-bold text-gray-900"
+              : "text-gray-500 hover:text-gray-900"
+          }`}
+          prefetch={false}
+        >
+          Jurnal Penyesuaian
+        </Link>
+        <Link
           href="/accounts"
           className={` dark:text-gray-400 dark:hover:text-gray-50 ${
             pathname === "/accounts"

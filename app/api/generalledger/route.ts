@@ -6,7 +6,7 @@ import newGLSchema, { IGeneralLedger } from "@/mongodb/models/GL";
 export const GET = async () => {
   try {
     await connectToDB();
-    const generalLedger = await newGLSchema.find();
+    const generalLedger = await newGLSchema.find({ type: "jurnalumum" });
     const accounts = await Account.find();
     const newgeneralLedger = generalLedger;
 

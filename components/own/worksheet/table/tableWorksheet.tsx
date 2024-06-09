@@ -18,10 +18,13 @@ import { IAccount } from "@/mongodb/models/Account";
 export default function WorksheetTableComponent() {
   const [accounts, setAccounts] = useState<IAccount[]>([]);
   const [ledgerEntries, setledgerEntries] = useState<IGeneralLedger[]>([]);
+  const [adjustEntries, setadjustEntries] = useState<IGeneralLedger[]>([]);
   const [totalDebitledgerEntries, settotalDebitledgerEntries] = useState(0);
   const [totalCreditledgerEntries, settotalCreditledgerEntries] = useState(0);
   const [totalDebitledgerAdjust, settotalDebitledgerAdjust] = useState(0);
   const [totalCreditledgerAdjust, settotalCreditledgerAdjust] = useState(0);
+  const [totalDebitledgerClosing, settotalDebitledgerClosing] = useState(0);
+  const [totalCreditledgerClosing, settotalCreditledgerClosing] = useState(0);
   const [totalDebitReportRL, settotalDebitReportRL] = useState(0);
   const [totalCreditReportRL, settotalCreditReportRL] = useState(0);
   const [totalDebitNeraca, settotalDebitNeraca] = useState(0);
@@ -39,14 +42,18 @@ export default function WorksheetTableComponent() {
   const getDataGeneralLedger = async () => {
     let newtotalDebitledgerEntries = 0;
     let newtotalCreditledgerEntries = 0;
+    let newtotalDebitadjustEntries = 0;
+    let newtotalCreditadjustEntries = 0;
     let newtotalDebitReportRL = 0;
     let newtotalCreditReportRL = 0;
     let newtotalDebitNeraca = 0;
     let newtotalCreditNeraca = 0;
 
-    const res = await fetch("/api/generalledger", { cache: "no-store" });
-    const { newgeneralLedger, accounts } = await res.json();
-    newgeneralLedger.map((dataLedger: IGeneralLedger) => {
+    const res = await fetch("/api/worksheet", { cache: "no-store" });
+    const { generalLedger, accounts, adjustLedger } = await res.json();
+
+    // GENERAL LEDGER
+    generalLedger.map((dataLedger: IGeneralLedger) => {
       dataLedger.debits.map((dataDebits: any) => {
         newtotalDebitledgerEntries += dataDebits.amount;
         accounts.map((dataAccount: any) => {
@@ -85,11 +92,53 @@ export default function WorksheetTableComponent() {
       });
     });
 
+    // ADJUST LEDGER
+    adjustLedger.map((dataAdjustLedger: IGeneralLedger) => {
+      dataAdjustLedger.debits.map((dataDebits: any) => {
+        newtotalDebitadjustEntries += dataDebits.amount;
+        accounts.map((dataAccount: any) => {
+          if (dataAccount._id.toString() == dataDebits.accountID) {
+            if (["4", "5"].includes(dataAccount.accountID.substring(0, 1))) {
+              newtotalDebitReportRL += dataDebits.amount;
+            } else if (["1"].includes(dataAccount.accountID.substring(0, 1))) {
+              newtotalDebitNeraca += dataDebits.amount;
+            } else if (
+              ["2", "3"].includes(dataAccount.accountID.substring(0, 1))
+            ) {
+              newtotalCreditNeraca -= dataDebits.amount;
+            }
+            dataDebits.accountName = dataAccount.name;
+            return;
+          }
+        });
+      });
+      dataAdjustLedger.credits.map((dataCredits: any) => {
+        newtotalCreditadjustEntries += dataCredits.amount;
+        accounts.map((dataAccount: any) => {
+          if (dataAccount._id.toString() == dataCredits.accountID) {
+            if (["4", "5"].includes(dataAccount.accountID.substring(0, 1))) {
+              newtotalCreditReportRL += dataCredits.amount;
+            } else if (
+              ["2", "3"].includes(dataAccount.accountID.substring(0, 1))
+            ) {
+              newtotalCreditNeraca += dataCredits.amount;
+            } else if (["1"].includes(dataAccount.accountID.substring(0, 1))) {
+              newtotalDebitNeraca -= dataCredits.amount;
+            }
+            dataCredits.accountName = dataAccount.name;
+            return;
+          }
+        });
+      });
+    });
+
     // ADD RETAINED EARNING TO NERACA
     newtotalCreditNeraca += newtotalCreditReportRL - newtotalDebitReportRL;
 
     settotalDebitledgerEntries(newtotalDebitledgerEntries);
     settotalCreditledgerEntries(newtotalCreditledgerEntries);
+    settotalDebitledgerAdjust(newtotalDebitadjustEntries);
+    settotalCreditledgerAdjust(newtotalCreditadjustEntries);
     settotalDebitReportRL(newtotalDebitReportRL);
     settotalCreditReportRL(newtotalCreditReportRL);
     settotalCreditRetainedEarning(
@@ -97,7 +146,9 @@ export default function WorksheetTableComponent() {
     );
     settotalDebitNeraca(newtotalDebitNeraca);
     settotalCreditNeraca(newtotalCreditNeraca);
-    setledgerEntries(newgeneralLedger);
+
+    setledgerEntries(generalLedger);
+    setadjustEntries(adjustLedger);
   };
 
   useEffect(() => {
@@ -173,6 +224,8 @@ export default function WorksheetTableComponent() {
                 accounts.map((dataAccount, index) => {
                   let debitGLAmount = 0;
                   let creditGLAmount = 0;
+                  let debitAdjustAmount = 0;
+                  let creditAdjustAmount = 0;
                   ledgerEntries.map((dataGE) => {
                     dataGE.debits.map((dataGEDebit) => {
                       if (dataAccount._id == dataGEDebit.accountID) {
@@ -185,6 +238,19 @@ export default function WorksheetTableComponent() {
                       }
                     });
                   });
+                  adjustEntries.map((dataAdjustLedger) => {
+                    dataAdjustLedger.debits.map((dataAdjustLedgerDebit) => {
+                      if (dataAccount._id == dataAdjustLedgerDebit.accountID) {
+                        debitAdjustAmount += dataAdjustLedgerDebit.amount;
+                      }
+                    });
+                    dataAdjustLedger.credits.map((dataAdjustLedgerCredit) => {
+                      if (dataAccount._id == dataAdjustLedgerCredit.accountID) {
+                        creditAdjustAmount += dataAdjustLedgerCredit.amount;
+                      }
+                    });
+                  });
+
                   return (
                     <TableRow key={index}>
                       <TableCell className="py-1 border">
@@ -214,14 +280,14 @@ export default function WorksheetTableComponent() {
                           style: "currency",
                           currency: "IDR",
                           maximumFractionDigits: 0,
-                        }).format(0)}
+                        }).format(debitAdjustAmount)}
                       </TableCell>
                       <TableCell className="py-1 border px-1 text-center">
                         {new Intl.NumberFormat("id", {
                           style: "currency",
                           currency: "IDR",
                           maximumFractionDigits: 0,
-                        }).format(0)}
+                        }).format(creditAdjustAmount)}
                       </TableCell>
                       {/* REPORT REVENUE OR LOSS */}
                       <TableCell className="py-1 border px-1 text-center">
@@ -272,7 +338,9 @@ export default function WorksheetTableComponent() {
                           currency: "IDR",
                           maximumFractionDigits: 0,
                         }).format(
-                          ["1"].includes(dataAccount.accountID.substring(0, 1))
+                          ["1"].includes(
+                            dataAccount.accountID.substring(0, 1)
+                          ) || dataAccount.accountID === "3100"
                             ? debitGLAmount - creditGLAmount
                             : 0
                         )}
@@ -288,7 +356,9 @@ export default function WorksheetTableComponent() {
                             : ["2", "3"].includes(
                                 dataAccount.accountID.substring(0, 1)
                               )
-                            ? creditGLAmount - debitGLAmount
+                            ? dataAccount.accountID == "3100"
+                              ? 0
+                              : creditGLAmount - debitGLAmount
                             : 0
                         )}
                       </TableCell>
@@ -352,14 +422,14 @@ export default function WorksheetTableComponent() {
                     style: "currency",
                     currency: "IDR",
                     maximumFractionDigits: 0,
-                  }).format(totalDebitledgerAdjust)}
+                  }).format(totalDebitledgerClosing)}
                 </TableCell>
                 <TableCell className="py-1 border px-1 text-center">
                   {new Intl.NumberFormat("id", {
                     style: "currency",
                     currency: "IDR",
                     maximumFractionDigits: 0,
-                  }).format(totalCreditledgerAdjust)}
+                  }).format(totalCreditledgerClosing)}
                 </TableCell>
                 {/* NERACA */}
                 <TableCell className="py-1 border px-1 text-center">
