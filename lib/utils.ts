@@ -18,3 +18,17 @@ export const uuidToId = (uuid: any) => {
   const hash = uuid.split("-").join("");
   return parseInt(hash.substr(0, 8), 16);
 };
+
+export const formatDateIndo = (date: Date | undefined): string => {
+  if (!date) return "Select Date";
+  const options: Intl.DateTimeFormatOptions = {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  };
+  return date.toLocaleDateString("en-US", options);
+};
+
+export const stripTime = (date: Date): Date => {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+};

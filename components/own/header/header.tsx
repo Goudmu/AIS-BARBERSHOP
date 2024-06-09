@@ -64,7 +64,7 @@ const HeaderOwnComponent = () => {
         >
           Worksheet
         </Link>
-        {/* <Link
+        <Link
           href="/reports"
           className={` dark:text-gray-400 dark:hover:text-gray-50 ${
             pathname === "/reports"
@@ -74,7 +74,7 @@ const HeaderOwnComponent = () => {
           prefetch={false}
         >
           Reports
-        </Link> */}
+        </Link>
       </nav>
       <div className="flex items-center gap-4">
         <Button variant="outline" size="icon" className="rounded-full">
