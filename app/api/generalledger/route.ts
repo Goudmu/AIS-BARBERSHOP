@@ -179,3 +179,11 @@ export const DELETE = async (req: NextRequest) => {
     throw new Error(error);
   }
 };
+
+// export const DELETE = async () => {
+//   try {
+//     await connectToDB();
+//     const deletes = await newGLSchema.deleteMany();
+//     return NextResponse.json({ message: "ALL" });
+//   } catch (error) {}
+// };

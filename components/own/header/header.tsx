@@ -32,9 +32,20 @@ const HeaderOwnComponent = () => {
           Services
         </Link>
         <Link
+          href="/expenses"
+          className={` dark:text-gray-400 dark:hover:text-gray-50 ${
+            pathname === "/expenses"
+              ? "font-bold text-gray-900"
+              : "text-gray-500 hover:text-gray-900"
+          }`}
+          prefetch={false}
+        >
+          Expenses
+        </Link>
+        <Link
           href="/jurnalumum"
           className={` dark:text-gray-400 dark:hover:text-gray-50 ${
-            pathname === "/transaction"
+            pathname === "/jurnalumum"
               ? "font-bold text-gray-900"
               : "text-gray-500 hover:text-gray-900"
           }`}
@@ -52,6 +63,17 @@ const HeaderOwnComponent = () => {
           prefetch={false}
         >
           Jurnal Penyesuaian
+        </Link>
+        <Link
+          href="/jurnalpenutup"
+          className={` dark:text-gray-400 dark:hover:text-gray-50 ${
+            pathname === "/jurnalpenutup"
+              ? "font-bold text-gray-900"
+              : "text-gray-500 hover:text-gray-900"
+          }`}
+          prefetch={false}
+        >
+          Jurnal Penutup
         </Link>
         <Link
           href="/accounts"
