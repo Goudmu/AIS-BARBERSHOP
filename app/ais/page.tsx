@@ -11,31 +11,13 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import Typewriter from "typewriter-effect";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import {
-  capitalizeFirstLetter,
-  cn,
-  extractJSONArray,
-  sortAccountsByID,
-} from "@/lib/utils";
+import { cn, extractJSONArray, sortAccountsByID } from "@/lib/utils";
 import { Settings2 } from "lucide-react";
 import Heading from "@/components/own/ais/heading";
 import { LoadingComponent } from "@/components/own/ais/loading";
 import { IAccount } from "@/mongodb/models/Account";
 
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
 
@@ -169,8 +151,8 @@ export default function AISPage() {
     <div className=" flex flex-col gap-5">
       <div>
         <Heading
-          title="Accounting Information System"
-          description="AIS Models"
+          title="Accounting Information System Integrated with Artificial Intelligence"
+          description="V.1.0.0"
           icon={Settings2}
           iconColor="text-violet-500"
           bgColor="bg-violet-500/10"
@@ -181,6 +163,7 @@ export default function AISPage() {
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
                 className=" rounded-lg border w-full p-4 px-3 md:px-6 focus-within:shadow-sm grid grid-cols-12 gap-2"
+                autoComplete="off"
               >
                 <FormField
                   name="prompt"

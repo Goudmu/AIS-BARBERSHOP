@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import OpenAI from "openai";
-import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 import MistralClient from "@mistralai/mistralai";
+import Account, { IAccount } from "@/mongodb/models/Account";
 
 const instructionMessage = {
   role: "user",
   content:
-    "I have accounting information system and I have this array of accounts ['cash', 'accounts Payable', 'owner's Equity', 'haircut Revenue', 'expenses']. First, learning about concept of accounting. I want you to return an array of object based on general ledger when i give you a prompt. For example, the prompt is 'modal awal perusahaan adalah 300.000', return [ { 'name': 'kas', 'debit': 300000, 'credit': 0 }, { 'name': 'modal', 'debit': 0, 'credit': 300000 } ]. Another example : the prompt is 'membayar utang 100.000', return [ { 'name': 'kas', 'debit': 0, 'credit': 100000 }, { 'name': 'utang', 'debit': 100000, 'credit': 0 } ]. The prompt is 'pendapatan hari ini 300.000', return [ { 'name': 'kas', 'debit': 0, 'credit': 300000 }, { 'name': 'pendapatan', 'debit': 300000, 'credit': 0 } ]. Return the array on JSON. Got it ?",
+    "I have accounting information system and I have this array of accounts ['cash','Account Receivables', 'Inventory', 'Equipment','Prive','Retained earning','Rent','Utilities','Wages', 'accounts Payable', 'owner's Equity', 'haircut Revenue']. First, learning about concept of accounting. I want you to return an array of object based on general ledger when i give you a prompt. For example, the prompt is 'modal awal perusahaan adalah 300.000', return [ { 'name': 'kas', 'debit': 300000, 'credit': 0 }, { 'name': 'modal', 'debit': 0, 'credit': 300000 } ]. Another example : the prompt is 'membayar utang 100.000', return [ { 'name': 'kas', 'debit': 0, 'credit': 100000 }, { 'name': 'utang', 'debit': 100000, 'credit': 0 } ]. The prompt is 'pendapatan hari ini 300.000', return [ { 'name': 'kas', 'debit': 0, 'credit': 300000 }, { 'name': 'pendapatan', 'debit': 300000, 'credit': 0 } ]. Another prompt is 'pendapatan hari ini 500.000'. Return [ { 'name': 'kas', 'debit': 500000, 'credit': 0 }, { 'name': 'pendapatan', 'debit': 0, 'credit': 500000 } ]. Return the array on JSON. Got it ? Here's the accounts and their default type. ",
 };
 
 const apiKey = process.env.MISTRAL_API_KEY;
@@ -22,14 +21,20 @@ export async function POST(req: Request) {
       return new NextResponse("Messages are null", { status: 400 });
     }
 
-    console.log(messages.content);
+    const accounts = await Account.find();
+    let conceptOfAccount = "[";
+    accounts.map((dataAcc: IAccount) => {
+      conceptOfAccount += `{name : ${dataAcc.name}, type : ${dataAcc.balance}}, `;
+    });
+    conceptOfAccount += "]. ";
 
     const chatResponse = await client.chat({
       model: "mistral-large-latest",
       messages: [
         {
           role: "user",
-          content: instructionMessage.content + " " + messages.content,
+          content:
+            instructionMessage.content + conceptOfAccount + messages.content,
         },
       ],
     });

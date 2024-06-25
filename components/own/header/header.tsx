@@ -76,6 +76,17 @@ const HeaderOwnComponent = () => {
           Jurnal Penutup
         </Link>
         <Link
+          href="/ais"
+          className={` dark:text-gray-400 dark:hover:text-gray-50 ${
+            pathname === "/ais"
+              ? "font-bold text-gray-900"
+              : "text-gray-500 hover:text-gray-900"
+          }`}
+          prefetch={false}
+        >
+          AIS with AI (New)
+        </Link>
+        <Link
           href="/accounts"
           className={` dark:text-gray-400 dark:hover:text-gray-50 ${
             pathname === "/accounts"
