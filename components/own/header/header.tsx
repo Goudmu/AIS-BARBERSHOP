@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -121,16 +122,7 @@ const HeaderOwnComponent = () => {
         </Link>
       </nav>
       <div className="flex items-center gap-4">
-        <Button variant="outline" size="icon" className="rounded-full">
-          {/* <img
-            src="/placeholder.svg"
-            width="32"
-            height="32"
-            className="rounded-full"
-            alt="Avatar"
-          /> */}
-          <span className="sr-only">User menu</span>
-        </Button>
+        <UserButton afterSignOutUrl="/" />
       </div>
     </header>
   );
