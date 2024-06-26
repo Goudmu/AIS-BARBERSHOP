@@ -7,7 +7,7 @@ export const GET = async () => {
     await connectToDB();
     const expensesAccount = await Account.find();
     const filteredExpensesAccount = expensesAccount.filter((data: IAccount) => {
-      return ["1", "2", "5"].includes(data.accountID.substring(0, 1));
+      return ["5"].includes(data.accountID.substring(0, 1));
     });
 
     return NextResponse.json({ expensesAccount: filteredExpensesAccount });
