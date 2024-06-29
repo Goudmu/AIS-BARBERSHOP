@@ -1,25 +1,7 @@
 import { connectToDB } from "@/mongodb/connect/connect";
-import Account from "@/mongodb/models/Account";
-import newGLSchema from "@/mongodb/models/GL";
+import Account, { IAccount } from "@/mongodb/models/Account";
+import newGLSchema, { IGeneralLedger } from "@/mongodb/models/GL";
 import { NextRequest, NextResponse } from "next/server";
-
-// export const GET = async (req: NextRequest) => {
-//   const url = new URL(req.url);
-//   const idAccount = new URLSearchParams(url.searchParams).get("id")?.valueOf();
-//   try {
-//     await connectToDB();
-//     if (idAccount == "" || idAccount == undefined) {
-//       const account = await Account.find();
-//       return NextResponse.json({ account });
-//     } else {
-//       const account = await Account.find({ _id: idAccount });
-//       return NextResponse.json({ account });
-//     }
-//   } catch (error: any) {
-//     console.log(error);
-//     throw new Error(error);
-//   }
-// };
 
 export const GET = async () => {
   try {
@@ -27,7 +9,41 @@ export const GET = async () => {
     const generalLedger = await newGLSchema.find({ type: "jurnalumum" });
     const adjustLedger = await newGLSchema.find({ type: "jurnalpenyesuaian" });
     const accounts = await Account.find();
-    return NextResponse.json({ generalLedger, adjustLedger, accounts });
+
+    // CLOSINSG LEDGER
+    const closingLedgerAccounts = accounts.filter((dataAccount: IAccount) => {
+      if (["4", "5"].includes(dataAccount.accountID.substring(0, 1))) {
+        return dataAccount;
+      } else if (["3"].includes(dataAccount.accountID.substring(0, 1))) {
+        if (dataAccount.accountID == "3100") {
+          return dataAccount;
+        }
+      }
+    });
+    const closingLedger = generalLedger.filter((data: IGeneralLedger) => {
+      let exist = false;
+      closingLedgerAccounts.map((dataAccount: any) => {
+        data.debits.map((dataDebit) => {
+          if (dataAccount._id.toString() == dataDebit.accountID) {
+            exist = true;
+          }
+        });
+        data.credits.map((dataCredit) => {
+          if (dataAccount._id.toString() == dataCredit.accountID) {
+            exist = true;
+          }
+        });
+      });
+      if (exist) {
+        return data;
+      }
+    });
+    return NextResponse.json({
+      generalLedger,
+      adjustLedger,
+      accounts,
+      closingLedger,
+    });
   } catch (error: any) {
     console.log(error);
     throw new Error(error);

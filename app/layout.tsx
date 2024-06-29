@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="max-w-[90%] mx-auto">{children}</div>
+        <div>{children}</div>
         <Toaster />
       </body>
     </html>

@@ -19,6 +19,7 @@ export default function WorksheetTableComponent() {
   const [accounts, setAccounts] = useState<IAccount[]>([]);
   const [ledgerEntries, setledgerEntries] = useState<IGeneralLedger[]>([]);
   const [adjustEntries, setadjustEntries] = useState<IGeneralLedger[]>([]);
+  const [closingEntries, setclosingEntries] = useState<IGeneralLedger[]>([]);
   const [totalDebitledgerEntries, settotalDebitledgerEntries] = useState(0);
   const [totalCreditledgerEntries, settotalCreditledgerEntries] = useState(0);
   const [totalDebitledgerAdjust, settotalDebitledgerAdjust] = useState(0);
@@ -44,13 +45,16 @@ export default function WorksheetTableComponent() {
     let newtotalCreditledgerEntries = 0;
     let newtotalDebitadjustEntries = 0;
     let newtotalCreditadjustEntries = 0;
+    let newtotalDebitclosingEntries = 0;
+    let newtotalCreditclosingEntries = 0;
     let newtotalDebitReportRL = 0;
     let newtotalCreditReportRL = 0;
     let newtotalDebitNeraca = 0;
     let newtotalCreditNeraca = 0;
 
     const res = await fetch("/api/worksheet", { cache: "no-store" });
-    const { generalLedger, accounts, adjustLedger } = await res.json();
+    const { generalLedger, accounts, adjustLedger, closingLedger } =
+      await res.json();
 
     // GENERAL LEDGER
     generalLedger.map((dataLedger: IGeneralLedger) => {
@@ -132,6 +136,34 @@ export default function WorksheetTableComponent() {
       });
     });
 
+    // CLOSING LEDGER
+    closingLedger.map((dataClosingLedger: IGeneralLedger) => {
+      dataClosingLedger.debits.map((dataDebit) => {
+        accounts.map((dataAccount: IAccount) => {
+          if (dataDebit.accountID == dataAccount._id) {
+            if (
+              ["4", "5", "3"].includes(dataAccount.accountID.substring(0, 1))
+            ) {
+              newtotalCreditclosingEntries += dataDebit.amount;
+            }
+          }
+        });
+      });
+      dataClosingLedger.credits.map((dataCredit) => {
+        accounts.map((dataAccount: IAccount) => {
+          if (dataCredit.accountID == dataAccount._id) {
+            if (
+              ["4", "5", "3"].includes(dataAccount.accountID.substring(0, 1))
+            ) {
+              newtotalDebitclosingEntries += dataCredit.amount;
+            }
+          }
+        });
+      });
+    });
+    settotalDebitledgerClosing(newtotalDebitclosingEntries);
+    settotalCreditledgerClosing(newtotalCreditclosingEntries);
+
     // ADD RETAINED EARNING TO NERACA
     newtotalCreditNeraca += newtotalCreditReportRL - newtotalDebitReportRL;
 
@@ -149,6 +181,7 @@ export default function WorksheetTableComponent() {
 
     setledgerEntries(generalLedger);
     setadjustEntries(adjustLedger);
+    setclosingEntries(closingLedger);
   };
 
   useEffect(() => {
@@ -226,6 +259,8 @@ export default function WorksheetTableComponent() {
                   let creditGLAmount = 0;
                   let debitAdjustAmount = 0;
                   let creditAdjustAmount = 0;
+                  let debitClosingAmount = 0;
+                  let creditClosingAmount = 0;
                   ledgerEntries.map((dataGE) => {
                     dataGE.debits.map((dataGEDebit) => {
                       if (dataAccount._id == dataGEDebit.accountID) {
@@ -247,6 +282,20 @@ export default function WorksheetTableComponent() {
                     dataAdjustLedger.credits.map((dataAdjustLedgerCredit) => {
                       if (dataAccount._id == dataAdjustLedgerCredit.accountID) {
                         creditAdjustAmount += dataAdjustLedgerCredit.amount;
+                      }
+                    });
+                  });
+                  closingEntries.map((dataClosingLedger) => {
+                    dataClosingLedger.debits.map((dataClosingLedgerDebit) => {
+                      if (dataAccount._id == dataClosingLedgerDebit.accountID) {
+                        creditClosingAmount += dataClosingLedgerDebit.amount;
+                      }
+                    });
+                    dataClosingLedger.credits.map((dataClosingLedgerCredit) => {
+                      if (
+                        dataAccount._id == dataClosingLedgerCredit.accountID
+                      ) {
+                        debitClosingAmount += dataClosingLedgerCredit.amount;
                       }
                     });
                   });
@@ -322,14 +371,26 @@ export default function WorksheetTableComponent() {
                           style: "currency",
                           currency: "IDR",
                           maximumFractionDigits: 0,
-                        }).format(0)}
+                        }).format(
+                          ["4", "5", "3"].includes(
+                            dataAccount.accountID.substring(0, 1)
+                          )
+                            ? debitClosingAmount
+                            : 0
+                        )}
                       </TableCell>
                       <TableCell className="py-1 border px-1 text-center">
                         {new Intl.NumberFormat("id", {
                           style: "currency",
                           currency: "IDR",
                           maximumFractionDigits: 0,
-                        }).format(0)}
+                        }).format(
+                          ["4", "5", "3"].includes(
+                            dataAccount.accountID.substring(0, 1)
+                          )
+                            ? creditClosingAmount
+                            : 0
+                        )}
                       </TableCell>
                       {/* NERACA */}
                       <TableCell className="py-1 border px-1 text-center">

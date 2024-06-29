@@ -1,127 +1,79 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 
+const MenuList = [
+  { name: "Dashboard", link: "/dashboard" },
+  { name: "Services", link: "/services" },
+  { name: "Expenses", link: "/expenses" },
+  { name: "Jurnal Umum", link: "/jurnalumum" },
+  { name: "Jurnal Penyesuaian", link: "/jurnalpenyesuaian" },
+  { name: "Jurnal Penutup", link: "/jurnalpenutup" },
+  { name: "AIS with AI (New)", link: "/ais" },
+  { name: "Akun Akuntansi", link: "/accounts" },
+  { name: "Worksheet", link: "/worksheet" },
+  { name: "Report", link: "/report" },
+];
+
 const HeaderOwnComponent = () => {
   const pathname = usePathname();
   return (
     <header className="flex items-center justify-between mb-6 mx-auto px-4 md:px-6 py-8">
-      <nav className="flex gap-4 text-sm font-medium">
-        <Link
-          href="/dashboard"
-          className={` dark:text-gray-400 dark:hover:text-gray-50 ${
-            pathname === "/dashboard"
-              ? "font-bold text-gray-900"
-              : "text-gray-500 hover:text-gray-900"
-          }`}
-          prefetch={false}
-        >
-          Dashboard
-        </Link>
-        <Link
-          href="/services"
-          className={` dark:text-gray-400 dark:hover:text-gray-50 ${
-            pathname === "/services"
-              ? "font-bold text-gray-900"
-              : "text-gray-500 hover:text-gray-900"
-          }`}
-          prefetch={false}
-        >
-          Services
-        </Link>
-        <Link
-          href="/expenses"
-          className={` dark:text-gray-400 dark:hover:text-gray-50 ${
-            pathname === "/expenses"
-              ? "font-bold text-gray-900"
-              : "text-gray-500 hover:text-gray-900"
-          }`}
-          prefetch={false}
-        >
-          Expenses
-        </Link>
-        <Link
-          href="/jurnalumum"
-          className={` dark:text-gray-400 dark:hover:text-gray-50 ${
-            pathname === "/jurnalumum"
-              ? "font-bold text-gray-900"
-              : "text-gray-500 hover:text-gray-900"
-          }`}
-          prefetch={false}
-        >
-          Jurnal Umum
-        </Link>
-        <Link
-          href="/jurnalpenyesuaian"
-          className={` dark:text-gray-400 dark:hover:text-gray-50 ${
-            pathname === "/jurnalpenyesuaian"
-              ? "font-bold text-gray-900"
-              : "text-gray-500 hover:text-gray-900"
-          }`}
-          prefetch={false}
-        >
-          Jurnal Penyesuaian
-        </Link>
-        <Link
-          href="/jurnalpenutup"
-          className={` dark:text-gray-400 dark:hover:text-gray-50 ${
-            pathname === "/jurnalpenutup"
-              ? "font-bold text-gray-900"
-              : "text-gray-500 hover:text-gray-900"
-          }`}
-          prefetch={false}
-        >
-          Jurnal Penutup
-        </Link>
-        <Link
-          href="/ais"
-          className={` dark:text-gray-400 dark:hover:text-gray-50 ${
-            pathname === "/ais"
-              ? "font-bold text-gray-900"
-              : "text-gray-500 hover:text-gray-900"
-          }`}
-          prefetch={false}
-        >
-          AIS with AI (New)
-        </Link>
-        <Link
-          href="/accounts"
-          className={` dark:text-gray-400 dark:hover:text-gray-50 ${
-            pathname === "/accounts"
-              ? "font-bold text-gray-900"
-              : "text-gray-500 hover:text-gray-900"
-          }`}
-          prefetch={false}
-        >
-          Akun Akuntansi
-        </Link>
-        <Link
-          href="/worksheet"
-          className={` dark:text-gray-400 dark:hover:text-gray-50 ${
-            pathname === "/worksheet"
-              ? "font-bold text-gray-900"
-              : "text-gray-500 hover:text-gray-900"
-          }`}
-          prefetch={false}
-        >
-          Worksheet
-        </Link>
-        <Link
-          href="/reports"
-          className={` dark:text-gray-400 dark:hover:text-gray-50 ${
-            pathname === "/reports"
-              ? "font-bold text-gray-900"
-              : "text-gray-500 hover:text-gray-900"
-          }`}
-          prefetch={false}
-        >
-          Reports
-        </Link>
+      <nav className="gap-4 sm:text-xs text-sm font-medium hidden md:flex md:justify-center">
+        {MenuList.map((data, index) => (
+          <Link
+            href={data.link}
+            className={` dark:text-gray-400 dark:hover:text-gray-50 ${
+              pathname === data.link
+                ? "font-bold text-gray-900"
+                : "text-gray-500 hover:text-gray-900"
+            }`}
+            prefetch={false}
+            key={index}
+          >
+            {data.name}
+          </Link>
+        ))}
         <Button onClick={() => signOut()}>Sign Out</Button>
       </nav>
+      <div className=" md:hidden">
+        <Sheet>
+          <SheetTrigger>
+            <h1>Open</h1>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetTitle>Menu</SheetTitle>
+            <SheetDescription></SheetDescription>
+            <div className="grid gap-4 py-4">
+              {MenuList.map((data, index) => (
+                <Link
+                  href={data.link}
+                  className={` dark:text-gray-400 dark:hover:text-gray-50 ${
+                    pathname === data.link
+                      ? "font-bold text-gray-900"
+                      : "text-gray-500 hover:text-gray-900"
+                  }`}
+                  prefetch={false}
+                  key={index}
+                >
+                  {data.name}
+                </Link>
+              ))}
+              <Button onClick={() => signOut()}>Sign Out</Button>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
     </header>
   );
 };
