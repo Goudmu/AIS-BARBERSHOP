@@ -16,17 +16,10 @@ export const GET = async () => {
 export const POST = async (req: NextRequest) => {
   try {
     await connectToDB();
-    const {
-      clerkId,
-      email,
-      username,
-      photo,
-      role = "barber",
-    } = await req.json();
+    const { username, password, photo = "", role = "admin" } = await req.json();
     const user = await User.create({
-      clerkId,
-      email,
       username,
+      password,
       photo,
       role,
     });

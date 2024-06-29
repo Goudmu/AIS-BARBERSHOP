@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { UserButton } from "@clerk/nextjs";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -120,10 +120,8 @@ const HeaderOwnComponent = () => {
         >
           Reports
         </Link>
+        <Button onClick={() => signOut()}>Sign Out</Button>
       </nav>
-      <div className="flex items-center gap-4">
-        <UserButton afterSignOutUrl="/" />
-      </div>
     </header>
   );
 };

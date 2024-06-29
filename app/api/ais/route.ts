@@ -60,29 +60,3 @@ export async function POST(req: Request) {
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
-
-// const openai = new OpenAI({
-//   apiKey: process.env.PUBLIC_OPENAI_API_KEY,
-//   baseURL: "https://api.pawan.krd/gpt-3.5-unfiltered/v1",
-// });
-
-// export async function POST(req: Request) {
-//   try {
-//     const body = await req.json();
-//     const { messages } = body;
-
-//     if (!messages) {
-//       return new NextResponse("Messages are null", { status: 400 });
-//     }
-
-//     const res = await openai.chat.completions.create({
-//       model: "gpt-3.5-turbo",
-//       messages: [instructionMessage, ...messages],
-//     });
-
-//     return NextResponse.json(res.choices[0].message);
-//   } catch (error) {
-//     console.log(error);
-//     return new NextResponse("Internal Error", { status: 500 });
-//   }
-// }
